@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../detail/detail_page.dart';
 
 class QuestionPage extends StatefulWidget {
   final String question;
@@ -86,8 +88,23 @@ class _QuestionPageState extends State<QuestionPage> {
                 selectNumber == -1
                   ? Container()
                   : ElevatedButton(
-                    onPressed: () {
+                    onPressed: (){
+                      FirebaseAnalytics.instance.logEvent(
+                        name: "personal_select",
+                        parameters: {"test_name": title, "select": selectNumber},
+                      );
+                      
+                      // Check if the widget is still mounted
+                      if (!context.mounted) return;
+
                       // 결과 페이지로 이동하기
+                      Navigator.of(context)
+                        .pushReplacement(MaterialPageRoute(builder: (context) {
+                          return DetailPage(
+                            answer: questions['answer'][selectNumber],
+                            question: questions['question']
+                          );
+                      }));
                     },
                     child: const Text('성격 보기'),
                   )
